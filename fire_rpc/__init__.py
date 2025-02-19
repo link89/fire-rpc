@@ -4,14 +4,14 @@ import fire
 import json
 
 
-def make_rpc_server(base_url: str, cmd_entry, secret = None):
+def make_rpc_server(base_url: str, cmd_entry, secret = None, auth_header='X-Auth-Token'):
     if not base_url.endswith('/'):
         base_url += '/'
 
     async def handler(request: web.Request) -> web.Response:
         try:
             if secret is not None:
-                auth_token = request.headers.get('X-Auth-Token')
+                auth_token = request.headers.get(auth_header)
                 if auth_token != secret:
                     return web.json_response({'error': 'unauthorized'}, status=401)
             data = await request.json()
@@ -31,7 +31,8 @@ def make_rpc_server(base_url: str, cmd_entry, secret = None):
     return app
 
 
-def start_rpc_server(base_url: str, cmd_entry, secret=None, host='localhost', port=8000):
+def start_rpc_server(base_url: str, cmd_entry, secret=None,
+                     host='localhost', port=8000, auth_header='X-Auth-Token'):
     loop = asyncio.new_event_loop()
-    app = make_rpc_server(base_url, cmd_entry, secret=secret)
+    app = make_rpc_server(base_url, cmd_entry, secret=secret, auth_header=auth_header)
     web.run_app(app, loop=loop, host=host, port=port)
