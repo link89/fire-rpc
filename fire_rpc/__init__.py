@@ -3,11 +3,8 @@ import asyncio
 import fire
 import json
 
-
-def make_rpc_server(base_url: str, cmd_entry, secret = None, auth_header='X-Auth-Token'):
-    if not base_url.endswith('/'):
-        base_url += '/'
-
+def make_rpc_server(base_url: str, cmd_entry, secret = None,
+                    auth_header='X-Auth-Token', json_dumps=json.dumps):
     async def handler(request: web.Request) -> web.Response:
         try:
             if secret is not None:
@@ -22,7 +19,8 @@ def make_rpc_server(base_url: str, cmd_entry, secret = None, auth_header='X-Auth
                 return web.json_response({'error': 'args must be a list'}, status=400)
             ret = fire.Fire(cmd_entry, args)
             res = {'result': ret}
-            return web.json_response(res)
+            return web.json_response(res, dumps=json_dumps)
+
         except (Exception, SystemExit) as e:
             return web.json_response({'error': str(e)}, status=400)
 
@@ -30,9 +28,8 @@ def make_rpc_server(base_url: str, cmd_entry, secret = None, auth_header='X-Auth
     app.add_routes([web.post(base_url, handler)])
     return app
 
-
-def start_rpc_server(base_url: str, cmd_entry, secret=None,
+def start_rpc_server(base_url: str, cmd_entry, secret=None, json_dumps=json.dumps,
                      host='localhost', port=8000, auth_header='X-Auth-Token'):
     loop = asyncio.new_event_loop()
-    app = make_rpc_server(base_url, cmd_entry, secret=secret, auth_header=auth_header)
+    app = make_rpc_server(base_url, cmd_entry, secret=secret, auth_header=auth_header, json_dumps=json_dumps)
     web.run_app(app, loop=loop, host=host, port=port)
