@@ -28,8 +28,17 @@ def make_rpc_server(base_url: str, cmd_entry, secret = None,
     app.add_routes([web.post(base_url, handler)])
     return app
 
+
 def start_rpc_server(base_url: str, cmd_entry, secret=None, json_dumps=json.dumps,
                      host='localhost', port=8000, auth_header='X-Auth-Token'):
     loop = asyncio.new_event_loop()
     app = make_rpc_server(base_url, cmd_entry, secret=secret, auth_header=auth_header, json_dumps=json_dumps)
     web.run_app(app, loop=loop, host=host, port=port)
+
+
+def make_fire_cmd(cmd_entry, json_dump=json.dumps):
+    def fire_cmd(base_url: str, secret=None, host='localhost', port=8000, auth_header='X-Auth-Token'):
+        start_rpc_server(base_url, cmd_entry,
+                         secret=secret, json_dumps=json_dump,
+                         host=host, port=port, auth_header=auth_header)
+    return fire_cmd
