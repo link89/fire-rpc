@@ -36,9 +36,9 @@ def start_rpc_server(base_url: str, cmd_entry, secret=None, json_dumps=json.dump
     web.run_app(app, loop=loop, host=host, port=port)
 
 
-def make_fire_cmd(cmd_entry, json_dump=json.dumps):
+def make_fire_cmd(cmd_entry, json_dumps=json.dumps):
     def fire_cmd(base_url: str, secret=None, host='localhost', port=8000, auth_header='X-Auth-Token'):
         start_rpc_server(base_url, cmd_entry,
-                         secret=secret, json_dumps=json_dump,
+                         secret=secret, json_dumps=json_dumps,
                          host=host, port=port, auth_header=auth_header)
     return fire_cmd

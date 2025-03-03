@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "fire-rpc"
-version = "0.1.1"
+version = "0.1.2"
 description = "turn fire command line to a rpc server"
 authors = ["weihong.xu <xuweihong.cn@gmail.com>"]
 license = "MIT"
