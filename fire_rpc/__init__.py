@@ -2,6 +2,7 @@ from aiohttp import web
 import asyncio
 import fire
 import json
+import traceback
 
 def make_rpc_server(base_url: str, cmd_entry, secret = None,
                     auth_header='X-Auth-Token', json_dumps=json.dumps):
@@ -22,7 +23,10 @@ def make_rpc_server(base_url: str, cmd_entry, secret = None,
             return web.json_response(res, dumps=json_dumps)
 
         except (Exception, SystemExit) as e:
-            return web.json_response({'error': str(e)}, status=400)
+            return web.json_response({
+                'error': str(e),
+                'stacktrace': traceback.format_exc(),
+            }, status=400)
 
     app = web.Application()
     app.add_routes([web.post(base_url, handler)])
