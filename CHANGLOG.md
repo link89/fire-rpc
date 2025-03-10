@@ -1,5 +1,8 @@
 # Change Log
 
+## 0.1.3
+* improvement: add stacktrace to error response
+
 ## 0.1.2
 * fix typo
 
